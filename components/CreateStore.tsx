@@ -21,6 +21,11 @@ const CreateStore = () => {
     currency: "",
     email: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    domain: "",
+    email: "",
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -33,6 +38,33 @@ const CreateStore = () => {
 
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    let validationErrors = { name: "", domain: "", email: "" };
+    let isValid = true;
+
+    // Store name validation (Min 3 characters)
+    if (formData.name.length < 3) {
+      validationErrors.name = "Store name must be at least 3 characters long";
+      isValid = false;
+    }
+
+    // Domain validation (Must be available)
+    if (!formData.domain || formData.domain.length < 3) {
+      validationErrors.domain = "Domain must be at least 3 characters long";
+      isValid = false;
+    }
+
+    // Email validation (Basic regex check)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      validationErrors.email = "Invalid email format!";
+      isValid = false;
+    }
+
+    // If validation fails, update state and prevent submission
+    if (!isValid) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const response = await axios.post(
         "https://interview-task-green.vercel.app/task/stores/create",
@@ -55,6 +87,7 @@ const CreateStore = () => {
           currency: "",
           email: "",
         });
+        setErrors({ name: "", domain: "", email: "" });
       } else {
         toast.error("Network error");
       }
@@ -109,6 +142,9 @@ const CreateStore = () => {
                 className="w-full h-14 px-4 py-2 outline-none border-[2px] border-gray-300
                 rounded-md placeholder:text-gray-400 placeholder:font-semibold focus-within:border-green-500"
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
           </div>
           {/* subdomain name */}
@@ -141,6 +177,9 @@ const CreateStore = () => {
                 className="w-full h-14 px-4 py-2 outline-none border-[2px] border-gray-300
                 rounded-md placeholder:text-gray-400 placeholder:font-semibold focus-within:border-green-500"
               />
+              {errors.domain && (
+                <p className="text-red-500 text-sm">{errors.domain}</p>
+              )}
             </div>
           </div>
           {/* location */}
@@ -275,6 +314,9 @@ const CreateStore = () => {
                 className="w-full h-14 px-4 py-2 outline-none border-[2px] border-gray-300
                 rounded-md placeholder:text-gray-400 placeholder:font-semibold focus-within:border-green-500"
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
           </div>
           <div className="w-full flex justify-end">
