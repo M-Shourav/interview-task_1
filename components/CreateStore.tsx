@@ -38,7 +38,7 @@ const CreateStore = () => {
 
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let validationErrors = { name: "", domain: "", email: "" };
+    const validationErrors = { name: "", domain: "", email: "" };
     let isValid = true;
 
     // Store name validation (Min 3 characters)
